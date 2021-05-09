@@ -1,9 +1,14 @@
-const { program, requiredOption } = require('commander');
+const { program } = require('commander');
 const fs = require('fs');
-const path = require('path');
-const { pipeline, Transform } = require('stream');
-const {validateInput, validateOutput, getNewShift} = require('./utils');
-const cipher = require('./cipher');
+const { pipeline } = require('stream');
+const {
+  validateInput,
+  validateOutput,
+  getNewShift,
+  validateAction,
+  validateShift
+} = require('./utils');
+const transformStream = require('./transformStream');
 
 program
   .requiredOption('-a, --action <action>', 'action must be encode or decode')
@@ -13,15 +18,17 @@ program
   .parse();
 const options = program.opts();
 
-if (options.action !== 'encode' && options.action !== 'decode') {
-  console.error('wrong action. Action must be encode or decode');
-  process.exit(9);
-}
+// if (options.action !== 'encode' && options.action !== 'decode') {
+//   console.error('wrong action. Action must be encode or decode');
+//   process.exit(9);
+// }
+validateAction(options.action);
 
-if (isNaN(+options.shift) || Number(+options.shift) % 1 !==0) {
-  console.error('shift must be number');
-  process.exit(9);
-}
+// if (isNaN(+options.shift) || Number(+options.shift) % 1 !==0) {
+//   console.error('shift must be number');
+//   process.exit(9);
+// }
+validateShift(options.shift);
 
 const newShift = getNewShift(options.action, +options.shift);
 
@@ -41,12 +48,12 @@ if (options.output) {
   outputStream = process.stdout;
 }
 
-const transformStream = (shift) => new Transform({
-  transform(chunk, encoding, callback) {
-    this.push(cipher(chunk.toString(), shift));
-    callback();
-  }
-});
+// const transformStream = (shift) => new Transform({
+//   transform(chunk, encoding, callback) {
+//     this.push(cipher(chunk.toString(), shift));
+//     callback();
+//   }
+// });
 
 pipeline(inputStream, transformStream(newShift), outputStream, (error) => {
   if (error) {

@@ -18,6 +18,19 @@ const validateOutput = (output) => {
   }
 }
 
+const validateAction = (action) => {
+  if (action !== 'encode' && action !== 'decode') {
+    console.error('wrong action. Action must be encode or decode');
+    process.exit(9);
+  }
+}
+const validateShift = (shift) => {
+  if (isNaN(+shift) || Number(+shift) % 1 !==0) {
+    console.error('shift must be number');
+    process.exit(9);
+  }
+}
+
 const getNewShift = (action, oldShift) => {
   let newShift;
   action === 'decode' ? newShift = -oldShift : newShift = oldShift;
@@ -29,5 +42,7 @@ const getNewShift = (action, oldShift) => {
 module.exports = {
   validateInput,
   validateOutput,
-  getNewShift
+  getNewShift,
+  validateAction,
+  validateShift
 }
