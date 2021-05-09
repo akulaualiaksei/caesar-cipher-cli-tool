@@ -11,8 +11,6 @@ program
   .option('-i, --input <input>', 'input file or stdin')
   .option('-o, --output <output>', 'output file or stdout')
   .parse();
-console.log(program.args);
-console.log(program.opts());
 const options = program.opts();
 
 if (options.action !== 'encode' && options.action !== 'decode') {
@@ -25,16 +23,12 @@ if (isNaN(+options.shift) || Number(+options.shift) % 1 !==0) {
   process.exit(9);
 }
 
-// console.log(Number(+options.shift) % 1 !==0);
-console.log('number', getNewShift(options.action, +options.shift));
 const newShift = getNewShift(options.action, +options.shift);
 
 let inputStream, outputStream;
 
 if (options.input) {
-  console.log('oi', options.input);
   validateInput(options.input);
-  // inputStream = fs.createReadStream(path.resolve(options.input));
   inputStream = fs.createReadStream(options.input);
 } else {
   inputStream = process.stdin;
@@ -43,22 +37,17 @@ if (options.input) {
 if (options.output) {
   validateOutput(options.output);
   outputStream = fs.createWriteStream(options.output, {flags: 'a'});
-  // outputStream = fs.createWriteStream(path.resolve(options.output), {flags: 'a'});
 } else {
   outputStream = process.stdout;
 }
 
 const transformStream = (shift) => new Transform({
   transform(chunk, encoding, callback) {
-    console.log('1', chunk.toString());
-    // console.log('this', this);
     this.push(cipher(chunk.toString(), shift));
     callback();
   }
 });
 
-// console.log('input', inputStream);
-// console.log('output', outputStream);
 pipeline(inputStream, transformStream(newShift), outputStream, (error) => {
   if (error) {
     console.error('Pipeline failed.', error.toString());
@@ -67,5 +56,3 @@ pipeline(inputStream, transformStream(newShift), outputStream, (error) => {
     console.log('Pipeline succeeded.');
   }
 });
-
-console.log('ok');
