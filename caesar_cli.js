@@ -18,16 +18,8 @@ program
   .parse();
 const options = program.opts();
 
-// if (options.action !== 'encode' && options.action !== 'decode') {
-//   console.error('wrong action. Action must be encode or decode');
-//   process.exit(9);
-// }
 validateAction(options.action);
 
-// if (isNaN(+options.shift) || Number(+options.shift) % 1 !==0) {
-//   console.error('shift must be number');
-//   process.exit(9);
-// }
 validateShift(options.shift);
 
 const newShift = getNewShift(options.action, +options.shift);
@@ -47,13 +39,6 @@ if (options.output) {
 } else {
   outputStream = process.stdout;
 }
-
-// const transformStream = (shift) => new Transform({
-//   transform(chunk, encoding, callback) {
-//     this.push(cipher(chunk.toString(), shift));
-//     callback();
-//   }
-// });
 
 pipeline(inputStream, transformStream(newShift), outputStream, (error) => {
   if (error) {

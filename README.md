@@ -3,8 +3,13 @@
 **CLI tool will encode and decode a text by [Caesar cipher](https://en.wikipedia.org/wiki/Caesar_cipher)**.
 
 ## Installation
-  1. Clone repository to local machine
-  2. Open terminal and install NPM modules
+  1. Clone repository to local machine from terminal
+  ``` git clone https://github.com/akulaualiaksei/caesar-cipher-cli-tool.git ```
+  2. Open caesar-cipher-cli-tool folder
+  ``` cd caesar-cipher-cli-tool/ ```
+  3. checkout branch caesar-cipher-cli-tool
+  ``` git checkout caesar-cipher-cli-tool ```
+  4. install NPM modules
   ``` npm install ```
 
 
