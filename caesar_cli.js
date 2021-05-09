@@ -1,7 +1,9 @@
-const { program } = require('commander');
+const { program, requiredOption } = require('commander');
 const fs = require('fs');
 const path = require('path');
-const {validateInput, validateOutput} = require('./utils');
+const { pipeline, Transform } = require('stream');
+const {validateInput, validateOutput, getNewShift} = require('./utils');
+const cipher = require('./cipher');
 
 program
   .requiredOption('-a, --action <action>', 'action must be encode or decode')
@@ -24,7 +26,8 @@ if (isNaN(+options.shift) || Number(+options.shift) % 1 !==0) {
 }
 
 // console.log(Number(+options.shift) % 1 !==0);
-console.log('number', +options.shift);
+console.log('number', getNewShift(options.action, +options.shift));
+const newShift = getNewShift(options.action, +options.shift);
 
 let inputStream, outputStream;
 
@@ -45,7 +48,24 @@ if (options.output) {
   outputStream = process.stdout;
 }
 
+const transformStream = (shift) => new Transform({
+  transform(chunk, encoding, callback) {
+    console.log('1', chunk.toString());
+    // console.log('this', this);
+    this.push(cipher(chunk.toString(), shift));
+    callback();
+  }
+});
+
 // console.log('input', inputStream);
 // console.log('output', outputStream);
+pipeline(inputStream, transformStream(newShift), outputStream, (error) => {
+  if (error) {
+    console.error('Pipeline failed.', error.toString());
+    process.exit(1);
+  } else {
+    console.log('Pipeline succeeded.');
+  }
+});
 
 console.log('ok');

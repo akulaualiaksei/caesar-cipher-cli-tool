@@ -18,7 +18,16 @@ const validateOutput = (output) => {
   }
 }
 
+const getNewShift = (action, oldShift) => {
+  let newShift;
+  action === 'decode' ? newShift = -oldShift : newShift = oldShift;
+  newShift = newShift % 26;
+  newShift < 0 ? newShift += 26 : newShift;
+  return newShift;
+}
+
 module.exports = {
   validateInput,
-  validateOutput
+  validateOutput,
+  getNewShift
 }
